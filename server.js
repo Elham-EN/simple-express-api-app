@@ -10,11 +10,35 @@ const app = express();
 
 const PORT = 3000;
 
-//App objects let us respond to these requests. First arg is the path
-//to that route or endpoint & second arg is route handler function which
-//a callback function, it takes request and respond object
+const friends = [
+  { id: 0, name: "Elon Musk" },
+  { id: 1, name: "Bill Gate" },
+  { id: 2, name: "Jeff Bezo" },
+];
+
 app.get("/", (req, res) => {
   res.send("Welcome to the Server");
+});
+
+app.get("/friends", (req, res) => {
+  //only send javascript objects for json/application content type
+  res.json(friends);
+});
+
+//Express will parse whatever comes after the slash
+app.get("/friends/:friendId", (req, res) => {
+  //Params give us access to the parameter in URL from the request
+  const friendId = Number(req.params.friendId);
+  const friend = friends[friendId]; //if not found return undefined
+  //if contain friend
+  if (friend) {
+    res.json(friend); //return that friend object
+  } else {
+    //if friend not found return 404 error and object
+    res.status(404).json({
+      error: "Friend does not exist",
+    });
+  }
 });
 
 app.listen(PORT, () => {
