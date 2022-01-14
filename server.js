@@ -3,38 +3,25 @@ const express = require("express");
 //Express Application
 const app = express();
 
-//We call the use function which will register our middleware
-//with Express, so it knows to run it. In the middleware we pass
-//callback to handle the request and response and it takes third
-//parameter next function.
-//Our callback here has the opportunity to work with the request,
-//use the data from it and take some action before it reaches any
-//of our route handlers. It might log the request coming in or do
-//some validation on the data that's in the request, maybe it's
-//checking that the user making that request is logged in and authorized
-//The next function is to call the next middleware
 app.use(function (req, res, next) {
   console.log(`Method: ${req.method} URL: ${req.url}`);
   next(); //pass control next middleware function
 });
 
-//We need to keep track of when the request started and when it completed.
-app.use(function (req, res, next) {
-  //When we enter this function is when our request was received
-  const start = Date.now(); //Give current time in milliseconds
-  //What happen next is this next() function is executed, Express finds the
-  //matching route handler and then that handler returns and the flow of
-  //execution returns to our middleware function right after the next() func.
-  console.log("Request Time Start: ", start.toPrecision());
-  next();
-  //after any actions we do in here, the middleware will return and express
-  //will send the response back to postman. Here we can measure the difference
-  //between the current, the time that the response is being sent back.
-  const delta = Date.now() - start; //represent different in times
-  console.log("Complete of response time: ", delta.toPrecision());
-});
-
+//JSON built-in middleware function in Express that understand when a request
+//is being passed in as JSON based on that content type header and when it
+//notices a request with that application/json content-type, it will be doing
+//the parsing for us. And a new body object containing the parsed data is
+//populated on the request object.
+//json() looks at the content type and sets the request body to javascript
+//object when the content-type is application/json
+app.use(express.json());
 const PORT = 3000;
+
+app.use(function (req, res, next) {
+  console.log(`Request Body: ${req.body.name}`);
+  next(); //pass control next middleware function
+});
 
 const friends = [
   { id: 0, name: "Elon Musk" },
@@ -60,6 +47,23 @@ app.get("/friends/:friendId", (req, res) => {
       error: "Friend does not exist",
     });
   }
+});
+
+//Add friend to the collection, With POST request, we will mostly look at
+//request object and reading data that was passed in from the client, data
+//that's in JSON format. The problem is that our express server don't understand
+//JSON out of the box. By convention we need to use JSON for all of our requests
+app.post("/friends", (req, res) => {
+  if (!req.body.name)
+    return res.status(400).json({ error: "Bad request: Missing friend name" });
+  const newFriend = {
+    id: friends.length,
+    //req.body have the property name in JSON format. Thid request body object
+    //won't exist unless we pass the JSON using our middleware express.json()
+    name: req.body.name,
+  };
+  friends.push(newFriend);
+  res.json(friends);
 });
 
 app.listen(PORT, () => {
