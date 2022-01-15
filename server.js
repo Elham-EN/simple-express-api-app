@@ -1,11 +1,11 @@
 const express = require("express");
-
-const messagesController = require("./controllers/messages.controller");
-const friendsController = require("./controllers/friends.controller");
+const friendsRouter = require("./routes/friends.router");
+const messagesRouter = require("./routes/messages.router");
 
 //Express Application
 const app = express();
 
+//Middleware functions
 app.use(function (req, res, next) {
   console.log(`Method: ${req.method} URL: ${req.url}`);
   next(); //pass control next middleware function
@@ -20,19 +20,18 @@ app.use(function (req, res, next) {
   next(); //pass control next middleware function
 });
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the Server");
-});
+//we need to call app.use() function to use the Router. We also sometimes
+//call this mounting the friend's router on the app object. And the special
+//thing that router allow us to do is that we can mount a group of routes
+//under a specific path.
 
-//Get all friends
-app.get("/friends", friendsController.getAllFriends);
-//Get a single friend
-app.get("/friends/:friendId", friendsController.getFriend);
-//Create a friend
-app.post("/friends", friendsController.createFriend);
+//So if we know that all our friends are going to be under the '/friends' path
+//just with different HTTP methods and something afterwards. Well we can mount
+//our friendRouter on '/friends' path
+app.use("/friends", friendsRouter);
 
-app.get("/messages", messagesController.getMessages);
-app.post("/messages", messagesController.createMessages);
+//Mount messages Router to this express app
+app.use("/messages", messagesRouter);
 
 app.listen(PORT, () => {
   console.log("====================================");
