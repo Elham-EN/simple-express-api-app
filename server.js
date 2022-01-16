@@ -1,6 +1,7 @@
 const express = require("express");
 const friendsRouter = require("./routes/friends.router");
 const messagesRouter = require("./routes/messages.router");
+const PORT = 3000;
 
 //Express Application
 const app = express();
@@ -12,8 +13,6 @@ app.use(function (req, res, next) {
 });
 
 app.use(express.json());
-
-const PORT = 3000;
 
 app.use(function (req, res, next) {
   console.log(`Request Body: ${req.body.name}`);

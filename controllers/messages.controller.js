@@ -5,8 +5,13 @@
  * like making a request.
  */
 
+const path = require("path");
+
+//Send File like image
 function getMessages(req, res) {
-  res.send(`<h1>Hello Albert!</h1>`);
+  //dirname will give us where this file is current located, '..' move 1 level up
+  const absoultePath = path.join(__dirname, "..", "public", "skimountain.jpg");
+  res.sendFile(absoultePath);
 }
 
 function createMessages(req, res) {
