@@ -10,8 +10,14 @@ const path = require("path");
 //Send File like image
 function getMessages(req, res) {
   //dirname will give us where this file is current located, '..' move 1 level up
-  const absoultePath = path.join(__dirname, "..", "public", "skimountain.jpg");
-  res.sendFile(absoultePath);
+  const absoultePath = path.join(
+    __dirname,
+    "..",
+    "public",
+    "images",
+    "skimountain.jpg"
+  );
+  res.sendFile(absoultePath); //must include absolute path (e.g from the root drive)
 }
 
 function createMessages(req, res) {

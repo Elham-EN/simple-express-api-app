@@ -1,8 +1,8 @@
 const express = require("express");
 const friendsRouter = require("./routes/friends.router");
 const messagesRouter = require("./routes/messages.router");
+const path = require("path");
 const PORT = 3000;
-
 //Express Application
 const app = express();
 
@@ -12,6 +12,18 @@ app.use(function (req, res, next) {
   next(); //pass control next middleware function
 });
 
+//Serving static page. The static() func input is a string containing a
+//relative path of the folder that we want to make available from our server
+//Make these static files available to route "/site".
+//The path of this folder is relative. Specifcally relative to the folder from
+//which you launch your node application
+//app.use("/site", express.static("public"));
+
+//Now static middleware is looking at the absolute path starting from the
+//directory where server.js lives, which is the root of our project and then
+//only from there looking into the public folder
+app.use("/site", express.static(path.join(__dirname, "public")));
+
 app.use(express.json());
 
 app.use(function (req, res, next) {
@@ -19,17 +31,8 @@ app.use(function (req, res, next) {
   next(); //pass control next middleware function
 });
 
-//we need to call app.use() function to use the Router. We also sometimes
-//call this mounting the friend's router on the app object. And the special
-//thing that router allow us to do is that we can mount a group of routes
-//under a specific path.
-
-//So if we know that all our friends are going to be under the '/friends' path
-//just with different HTTP methods and something afterwards. Well we can mount
-//our friendRouter on '/friends' path
 app.use("/friends", friendsRouter);
 
-//Mount messages Router to this express app
 app.use("/messages", messagesRouter);
 
 app.listen(PORT, () => {
